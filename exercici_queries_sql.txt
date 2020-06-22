@@ -1,0 +1,49 @@
+1 / Quantitat de registres de la taula de vols:
+
+SELECT COUNT(flightID) FROM USAirlineFlights2.Flights;
+
+2 / Retard promig de sortida i arribada segons l’aeroport origen.
+
+SELECT origin, AVG(ArrDelay) AS 'prom_arribades', AVG(DepDelay) AS 'prom_sortides' FROM USAirlineFlights2.flights
+GROUP BY origin;
+
+3 / Retard promig d’arribada dels vols, per mesos, anys i segons l’aeroport origen. A més, volen que els
+resultat es mostrin de la següent forma (fixa’t en l’ordre de les files):
+
+SELECT origin, colYear, colMonth, AVG(ArrDelay) AS 'prom_arribades' FROM USAirlineFlights2.flights
+GROUP BY origin, colYear, colMonth ASC;
+
+4 / Retard promig d’arribada dels vols, per mesos, anys i segons l’aeroport origen (mateixa consulta que
+abans i amb el mateix ordre). Però a més, ara volen que en comptes del codi de l’aeroport es mostri
+el nom de la ciutat.
+
+SELECT City, colYear, colMonth,  AVG(ArrDelay) as 'prom_arribades'
+FROM usairlineflights2.usairports INNER JOIN usairlineflights2.flights 
+ON usairports.IATA = flights.flightID 
+GROUP BY City, colYear, colMonth ASC;
+
+5 / Les companyies amb més vols cancelats, per mesos i any. A més, han d’estar ordenades de forma
+que les companyies amb més cancel·lacions apareguin les primeres.
+
+SELECT UniqueCarrier, colYear, colMonth, COUNT(Cancelled) AS 'total_cancelled' 
+FROM usairlineflights2.flights INNER JOIN usairlineflights2.carriers  
+ON carriers.CarrierCode = flights.UniqueCarrier
+GROUP BY UniqueCarrier, colYear, colMonth, Cancelled
+ORDER BY Cancelled DESC;
+
+6 / L’identificador dels 10 avions que més distància han recorregut fent vols.
+
+SELECT TailNum, sum(distance) as 'totalDistance' 
+from usairlineflights2.flights 
+group by TailNum 
+order by totalDistance DESC LIMIT 10;
+
+7 / Companyies amb el seu retard promig només d’aquelles les quals els seus vols arriben al seu destí
+amb un retràs promig major de 10 minuts.
+
+SELECT Uniquecarrier, avg(ArrDelay) AS 'avgDelay'
+FROM usairlineflights2.carriers INNER JOIN usairlineflights2.flights
+ON flights.UniqueCarrier = carriers.CarrierCode
+GROUP BY Uniquecarrier
+HAVING AVG(ArrDelay) > 10
+ORDER BY AVG(ArrDelay) DESC;
